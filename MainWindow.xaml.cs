@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using System.Xml.Schema;
 using Microsoft.Win32;
 
 namespace WpfApplication1
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow
     {
         public MainWindow()
@@ -20,86 +15,89 @@ namespace WpfApplication1
             InitializeComponent();
         }
 
+        private void codedecode()
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                switch (ComboBox.Text)
+                {
+                    case "text -> vigenere":
+                    {
+                        textbox2.Text = vigenere(textbox1.Text, true, textbox3.Text);
+                        break;
+                    }
+                    case "vigenere -> text":
+                    {
+                        textbox2.Text = vigenere(textbox1.Text, false, textbox3.Text);
+                        break;
+                    }
+                    case "text -> cesar":
+                    {
+                        textbox2.Text = cesar(textbox1.Text, false, textbox3.Text);
+                        break;
+                    }
+                    case "cesar -> text":
+                    {
+                        textbox2.Text = cesar(textbox1.Text, true, textbox3.Text);
+                        break;
+                    }
+
+                    case "text -> binaire":
+                    {
+                        textbox2.Text = StringToBinary(textbox1.Text);
+                        break;
+                    }
+                    case "binaire -> text":
+                    {
+                        textbox2.Text = BinaryToString(textbox1.Text);
+                        break;
+                    }
+                    case "text -> hexa":
+                    {
+                        textbox2.Text = StringToHexa(textbox1.Text);
+                        break;
+                    }
+                    case "hexa -> text":
+                    {
+                        textbox2.Text = HexaToString(textbox1.Text);
+                        break;
+                    }
+                    default:
+                    {
+                        MessageBox.Show("Erreur, ce n'est pas censé arriver", "Erreur message", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                        break;
+                    }
+                }
+            }));
+        }
+
         private void Execute(object sender, RoutedEventArgs e)
         {
-
-            switch (ComboBox.Text)
-            {
-                case ("text -> vigenere"):
-                {
-                    textbox2.Text = vigenere(textbox1.Text, true, textbox3.Text);
-                    break;
-                }
-                case ("vigenere -> text"):
-                {
-                    textbox2.Text = vigenere(textbox1.Text, false, textbox3.Text);
-                    break;
-                }
-                case ("text -> cesar"):
-                {
-                    textbox2.Text = cesar(textbox1.Text, false, textbox3.Text);
-                    break;
-                }
-                case ("cesar -> text"):
-                {
-                    textbox2.Text = cesar(textbox1.Text, true, textbox3.Text);
-                    break;
-                }
-
-                case ("text -> binaire"):
-                {
-                    textbox2.Text = StringToBinary(textbox1.Text);
-                    break;
-                }
-                case ("binaire -> text"):
-                {
-                    textbox2.Text = BinaryToString(textbox1.Text);
-                    break;
-                }
-                case ("text -> hexa"):
-                {
-                    textbox2.Text = StringToHexa(textbox1.Text);
-                    break;
-                }
-                case ("hexa -> text"):
-                {
-                    textbox2.Text = HexaToString(textbox1.Text);
-                    break;
-                }
-                default:
-                {
-                    textbox2.Text = BinaryToString(textbox1.Text);
-                    break;
-
-                }
+            var t = new Thread(codedecode);
 
 
-            }
-
+            t.Start();
         }
 
         private void import(object sender, RoutedEventArgs e)
         {
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            var openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
                 textbox1.Text = File.ReadAllText(openFileDialog.FileName);
-
         }
+
         private void export(object sender, RoutedEventArgs e)
         {
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            if(saveFileDialog.ShowDialog() == true)
+            var saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == true)
                 File.WriteAllText(saveFileDialog.FileName, textbox2.Text);
-
         }
 
-        public static string StringToHexa(string text)
+        private static string StringToHexa(string text)
         {
-            StringBuilder sH = new StringBuilder();
-            byte[] bytes = Encoding.UTF8.GetBytes(text);
-            foreach (char c in text.ToCharArray())
+            var sH = new StringBuilder();
+            foreach (var c in text)
             {
                 sH.Append(Convert.ToByte(c).ToString("x2"));
                 sH.Append(" ");
@@ -108,23 +106,19 @@ namespace WpfApplication1
             return sH.ToString();
         }
 
-        public static string HexaToString(string text)
+        private static string HexaToString(string text)
         {
-            List<Byte> byteList = new List<Byte>();
-            string[] s = text.Split(' ');
+            var byteList = new List<byte>();
+            var s = text.Split(' ');
 
 
             try
             {
-
-                foreach (string s1 in s)
-                {
-                    byteList.Add(Convert.ToByte(s1, 16));
-                }
+                foreach (var s1 in s) byteList.Add(Convert.ToByte(s1, 16));
             }
-            catch(Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
+                //ignore
             }
 
 
@@ -136,31 +130,29 @@ namespace WpfApplication1
             return (a % b + b) % b;
         }
 
-        public static String vigenere(string str, bool way, String cles)
+        private static string vigenere(string str, bool way, string cles)
         {
-            int specount = 0;
-            String output = "";
-            bool verif = false;
-            for (int i = 0; i < cles.Length; ++i)
+            var specount = 0;
+            var output = "";
+            var verif = false;
+            for (var i = 0; i < cles.Length; ++i)
                 if (!char.IsLetter(cles[i]))
                     verif = true;
             if (verif)
             {
-                MessageBox.Show("Erreur dans la cles", "My App", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Erreur dans la cles", "Erreur messsage", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return null;
-
             }
 
-            for (int i = 0; i < str.Length; ++i)
-            {
+            for (var i = 0; i < str.Length; ++i)
                 if (char.IsLetter(str[i]))
                 {
-                    bool cIsUpper = char.IsUpper(str[i]);
-                    char offset = cIsUpper ? 'A' : 'a';
-                    int keyIndex = (i - specount) % (cles.Length);
-                    int k = (cIsUpper ? char.ToUpper(cles[keyIndex]) : char.ToLower(cles[keyIndex])) - offset;
+                    var cIsUpper = char.IsUpper(str[i]);
+                    var offset = cIsUpper ? 'A' : 'a';
+                    var keyIndex = (i - specount) % cles.Length;
+                    var k = (cIsUpper ? char.ToUpper(cles[keyIndex]) : char.ToLower(cles[keyIndex])) - offset;
                     k = way ? k : -k;
-                    char ch = (char) ((Mod(((str[i] + k) - offset), 26)) + offset);
+                    var ch = (char) (Mod(str[i] + k - offset, 26) + offset);
                     output += ch;
                 }
                 else
@@ -168,56 +160,47 @@ namespace WpfApplication1
                     specount++;
                     output += str[i];
                 }
-            }
 
             return output;
-
         }
 
-        public static String cesar(string str, bool way, string cle)
+        private static string cesar(string str, bool way, string cle)
         {
-            String output = "";
+            var output = "";
 
             try
             {
-                int cles = int.Parse(cle);
-                cles = cles > 26 ? cles -= 26 : cles;
-                for (int i = 0; i < str.Length; ++i)
-                {
+                var cles = int.Parse(cle);
+                for (var i = 0; i < str.Length; ++i)
                     if (char.IsLetter(str[i]))
                     {
-                        bool cIsUpper = char.IsUpper(str[i]);
-                        char offset = cIsUpper ? 'A' : 'a';
-                        int k = (cIsUpper ? char.ToUpper('A') : char.ToLower('A')) - offset - cles;
+                        var cIsUpper = char.IsUpper(str[i]);
+                        var offset = cIsUpper ? 'A' : 'a';
+                        var k = (cIsUpper ? char.ToUpper('A') : char.ToLower('A')) - offset - cles;
                         k = way ? k : -k;
-                        char ch = (char) ((Mod(((str[i] + k) - offset), 26)) + offset);
+                        var ch = (char) (Mod(str[i] + k - offset, 26) + offset);
                         output += ch;
                     }
                     else
                     {
                         output += str[i];
                     }
-                }
 
                 return output;
             }
             catch
             {
-
-                MessageBox.Show("Erreur dans la cles", "My App", MessageBoxButton.OK, MessageBoxImage.Warning);
-
+                MessageBox.Show("Erreur dans la cles", "Erreur message", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
             return null;
-
-
         }
 
-        public static string StringToBinary(string data)
+        private static string StringToBinary(string data)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            foreach (char c in data.ToCharArray())
+            foreach (var c in data)
             {
                 sb.Append(Convert.ToString(c, 2).PadLeft(8, '0'));
                 sb.Append(" ");
@@ -227,16 +210,13 @@ namespace WpfApplication1
             return sb.ToString();
         }
 
-        public static string BinaryToString(string data)
+        private static string BinaryToString(string data)
         {
-            List<Byte> byteList = new List<Byte>();
-            string[] s = data.Split(' ');
+            var byteList = new List<byte>();
+            var s = data.Split(' ');
             try
             {
-                foreach (string s1 in s)
-                {
-                    byteList.Add(Convert.ToByte(s1, 2));
-                }
+                foreach (var s1 in s) byteList.Add(Convert.ToByte(s1, 2));
             }
             catch
             {
@@ -246,6 +226,5 @@ namespace WpfApplication1
 
             return Encoding.ASCII.GetString(byteList.ToArray());
         }
-
     }
 }

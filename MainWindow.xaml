@@ -26,7 +26,7 @@
 
         </Grid.ColumnDefinitions>
         
-        <Label>TP2 Adrien Girard Yann Courtemanche Jonathan Witt</Label>
+        <Label>TP2 Adrien Girard Yann Courtemanche Jonathan Witt Valériant Callot</Label>
         <TextBox Grid.Row="1" Grid.Column="0" Width="550" Height="500" Name="textbox1" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" >  
             Rentrez votre texte  
         </TextBox> 
