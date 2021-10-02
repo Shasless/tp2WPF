@@ -8,4 +8,4 @@ Valeriant CALLOT
 L'application peut etre soit compilé, soit executé simplement avec le .exe
 
 
-certain bout de code d'encription on ete prix de diverse source open source. Cependant le code peut etre entierment expliué. 
+certain bout de code d'encription on ete prix de diverse source open source. Cependant le code peut etre entierment expliqué. 
